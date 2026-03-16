@@ -37,7 +37,11 @@ public class charController : MonoBehaviour
         rb.AddForce(movement * speed * Time.deltaTime, ForceMode.Impulse);
         if (forwardMovement == new Vector3(0, 0, 0) && horizontalMovement == new Vector3(0, 0, 0))
         {
-            rb.velocity = new Vector3(0, rb.velocity.y, 0);
+            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+        }
+        if (Input.GetAxis("Vertical") == 0 && Input.GetAxis("Horizontal") == 0)
+        {
+            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
         }
     }
 
