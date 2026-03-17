@@ -1,24 +1,7 @@
 using UnityEngine;
 using Cinemachine;
 
-/// <summary>
-/// Cinemachine RPG Camera — always-locked cursor, Dark Souls / WoW style.
-///
-/// Behaviour:
-///   - Cursor is always locked. Mouse always rotates the camera.
-///   - The player character is kept in sync with the camera yaw via the
-///     shared CameraState ScriptableObject (read by RPGPlayerController).
-///   - Hold Right Mouse Button to freelook: camera orbits the player freely
-///     without rotating the character. On release, camera snaps back behind.
-///
-/// Setup:
-///   1. Add a CinemachineFreeLook camera to your scene.
-///   2. Set its Follow and Look At to your Player.
-///   3. Add THIS script to the same GameObject as the FreeLook camera.
-///   4. In the FreeLook Inspector, clear both axis input names (leave blank).
-///   5. Assign playerTransform and cameraState in the Inspector.
-///   6. On RPGPlayerController, assign the same CameraState asset.
-/// </summary>
+
 [RequireComponent(typeof(CinemachineFreeLook))]
 public class RPGCinemachineInput : MonoBehaviour
 {
@@ -67,8 +50,6 @@ public class RPGCinemachineInput : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // IMPORTANT: FreeLook must use Update (not FixedUpdate) since we drive it with mouse input
-        // Set this in the Inspector too: FreeLook → Update Method → Update
     }
 
     private void Update()

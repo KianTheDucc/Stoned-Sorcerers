@@ -1,15 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-/// <summary>
-/// RPG Player Controller — Third-Person, Camera-Relative WASD Movement.
-/// Cursor is always locked. Character always faces the camera direction,
-/// unless the player is freelooking (RMB held), in which case rotation is frozen.
-///
-/// Setup:
-///   1. Add to your Player GameObject (CharacterController is auto-required).
-///   2. Assign cameraState — the same ScriptableObject used by RPGCinemachineInput.
-/// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class RPGPlayerController : MonoBehaviour
 {
@@ -44,7 +35,7 @@ public class RPGPlayerController : MonoBehaviour
     [SerializeField] private float staminaRegenDelay = 1.5f;
     [SerializeField] private float minStaminaToSprint = 10f;
 
-    /// <summary>Fires when stamina changes. Passes 0-1 normalised — wire to a UI slider.</summary>
+    // Fires when stamina changes. Passes 0-1 normalised — wire to a UI slider
     public UnityEvent<float> OnStaminaChanged;
 
     // ─── Camera State ─────────────────────────────────────────────────────────
