@@ -30,10 +30,11 @@ public class RPGPlayerController : MonoBehaviour
     [Header("Camera")]
     [SerializeField] private CameraState cameraState;
 
-    [Header("Visual Rotation (optional)")]
-    [Tooltip("Assign your mesh child here. It will rotate to face the camera. " +
-             "The root transform never rotates so Cinemachine stays stable.")]
+    [Header("Visuals (optional)")]
+    [Tooltip("Assign your mesh child here. It will rotate to face the camera.")]
     [SerializeField] private Transform meshRoot;
+    [Tooltip("How smoothly the visual follows vertical movement. Higher = snappier.")]
+    [SerializeField] private float verticalSmoothSpeed = 12f;
 
     public float CurrentStamina { get; private set; }
     public bool IsSprinting { get; private set; }
@@ -41,6 +42,7 @@ public class RPGPlayerController : MonoBehaviour
 
     private CharacterController _cc;
     private Vector3 _velocity;
+    private float _smoothY;
     private float _verticalVelocity;
     private float _staminaRegenTimer;
     private float _lastStamina;
@@ -54,6 +56,7 @@ public class RPGPlayerController : MonoBehaviour
         _cc = GetComponent<CharacterController>();
         CurrentStamina = maxStamina;
         _lastStamina = maxStamina;
+        _smoothY = transform.position.y;
 
         var gc = new GameObject("_GroundCheck");
         gc.transform.SetParent(transform);
@@ -66,10 +69,7 @@ public class RPGPlayerController : MonoBehaviour
         _moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         if (Input.GetButtonDown("Jump"))
             _jumpPressed = true;
-    }
 
-    private void FixedUpdate()
-    {
         CheckGround();
         HandleStamina();
         HandleMovement();
@@ -89,24 +89,17 @@ public class RPGPlayerController : MonoBehaviour
     {
         float targetSpeed = IsSprinting ? sprintSpeed : walkSpeed;
 
-        if (_moveInput.magnitude >= 0.1f)
-        {
-            // Read directly from the camera transform
-            Transform cam = Camera.main != null ? Camera.main.transform : null;
-            Vector3 forward = cam != null ? cam.forward : Vector3.forward;
-            Vector3 right = cam != null ? cam.right : Vector3.right;
+        Transform cam = Camera.main != null ? Camera.main.transform : null;
+        Vector3 forward = cam != null ? cam.forward : Vector3.forward;
+        Vector3 right = cam != null ? cam.right : Vector3.right;
 
-            // Flatten to horizontal plane
-            forward.y = 0f; forward.Normalize();
-            right.y = 0f; right.Normalize();
+        forward.y = 0f; forward.Normalize();
+        right.y = 0f; right.Normalize();
 
-            // Set velocity directly — no MoveTowards steering that causes circular drift
-            _velocity = (forward * _moveInput.y + right * _moveInput.x).normalized * targetSpeed;
-        }
-        else
-        {
-            _velocity = Vector3.MoveTowards(_velocity, Vector3.zero, deceleration * Time.deltaTime);
-        }
+        Vector3 moveDir = (forward * _moveInput.y + right * _moveInput.x).normalized;
+
+        float rate = _moveInput.magnitude >= 0.1f ? acceleration : deceleration;
+        _velocity = Vector3.MoveTowards(_velocity, moveDir * targetSpeed, rate * Time.deltaTime);
     }
 
     private void HandleStamina()
