@@ -675,7 +675,25 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Android: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    EmbeddedLinux: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    GameCoreScarlett: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    GameCoreXboxOne: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    Kepler: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    LinuxHeadlessSimulation: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    Nintendo Switch: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    Nintendo Switch 2: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    PS4: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    PS5: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    QNX: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    Standalone: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    VisionOS: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    WebGL: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    Windows Store Apps: BCG_RMD
+    XboxOne: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
+    iPhone: BCG_RMD
+    tvOS: BCG_RMD;UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
