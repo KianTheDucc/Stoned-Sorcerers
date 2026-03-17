@@ -4,29 +4,20 @@ using UnityEngine.Events;
 [RequireComponent(typeof(CharacterController))]
 public class RPGPlayerController : MonoBehaviour
 {
-    // ─── Movement ─────────────────────────────────────────────────────────────
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 4f;
     [SerializeField] private float sprintSpeed = 8f;
     [SerializeField] private float acceleration = 12f;
     [SerializeField] private float deceleration = 16f;
-    [Tooltip("How fast the character rotates to face the camera direction.")]
-    [SerializeField] private float rotationSpeed = 720f; // degrees per second
-    [Tooltip("Assign your character's mesh/model child here. It rotates to face movement " +
-             "direction while the root (followed by Cinemachine) stays stable.")]
-    [SerializeField] private Transform meshRoot;
 
-    // ─── Jumping & Gravity ────────────────────────────────────────────────────
     [Header("Jumping & Gravity")]
     [SerializeField] private float jumpHeight = 1.4f;
     [SerializeField] private float gravity = -22f;
 
-    // ─── Ground Detection ─────────────────────────────────────────────────────
     [Header("Ground Detection")]
     [SerializeField] private float groundRadius = 0.28f;
     [SerializeField] private LayerMask groundMask = ~0;
 
-    // ─── Stamina ──────────────────────────────────────────────────────────────
     [Header("Stamina")]
     [SerializeField] private float maxStamina = 100f;
     [SerializeField] private float sprintDrainRate = 20f;
@@ -34,29 +25,29 @@ public class RPGPlayerController : MonoBehaviour
     [SerializeField] private float staminaRegenRate = 12f;
     [SerializeField] private float staminaRegenDelay = 1.5f;
     [SerializeField] private float minStaminaToSprint = 10f;
-
-    // Fires when stamina changes. Passes 0-1 normalised — wire to a UI slider
     public UnityEvent<float> OnStaminaChanged;
 
-    // ─── Camera State ─────────────────────────────────────────────────────────
     [Header("Camera")]
     [SerializeField] private CameraState cameraState;
 
-    // ─── Public State ─────────────────────────────────────────────────────────
+    [Header("Visual Rotation (optional)")]
+    [Tooltip("Assign your mesh child here. It will rotate to face the camera. " +
+             "The root transform never rotates so Cinemachine stays stable.")]
+    [SerializeField] private Transform meshRoot;
+
     public float CurrentStamina { get; private set; }
     public bool IsSprinting { get; private set; }
     public bool IsGrounded { get; private set; }
 
-    // ─── Private ──────────────────────────────────────────────────────────────
     private CharacterController _cc;
     private Vector3 _velocity;
     private float _verticalVelocity;
     private float _staminaRegenTimer;
     private float _lastStamina;
     private bool _sprintLocked;
+    private Vector2 _moveInput;
+    private bool _jumpPressed;
     private Transform _groundCheck;
-
-    // ─────────────────────────────────────────────────────────────────────────
 
     private void Awake()
     {
@@ -70,13 +61,8 @@ public class RPGPlayerController : MonoBehaviour
         _groundCheck = gc.transform;
     }
 
-    // Input state — written in Update, consumed in FixedUpdate
-    private Vector2 _moveInput;
-    private bool _jumpPressed;
-
     private void Update()
     {
-        // Read input every frame so no presses are missed
         _moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         if (Input.GetButtonDown("Jump"))
             _jumpPressed = true;
@@ -84,33 +70,44 @@ public class RPGPlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Physics and movement in FixedUpdate for consistent simulation
         CheckGround();
         HandleStamina();
         HandleMovement();
         HandleJump();
         ApplyGravity();
-        ApplyMotion();
+        _cc.Move((_velocity + Vector3.up * _verticalVelocity) * Time.deltaTime);
     }
-
-    private void LateUpdate()
-    {
-        // Rotation in LateUpdate — after Cinemachine has published the final yaw
-        ApplyCharacterRotation();
-    }
-
-    // ─── Ground ───────────────────────────────────────────────────────────────
 
     private void CheckGround()
     {
-        // Offset the check slightly downward so it overlaps the ground consistently
-        // without flickering when the CharacterController is resting on a surface
         Vector3 origin = _groundCheck.position + Vector3.down * 0.05f;
         IsGrounded = Physics.CheckSphere(origin, groundRadius, groundMask,
                                          QueryTriggerInteraction.Ignore);
     }
 
-    // ─── Stamina ──────────────────────────────────────────────────────────────
+    private void HandleMovement()
+    {
+        float targetSpeed = IsSprinting ? sprintSpeed : walkSpeed;
+
+        if (_moveInput.magnitude >= 0.1f)
+        {
+            // Read directly from the camera transform
+            Transform cam = Camera.main != null ? Camera.main.transform : null;
+            Vector3 forward = cam != null ? cam.forward : Vector3.forward;
+            Vector3 right = cam != null ? cam.right : Vector3.right;
+
+            // Flatten to horizontal plane
+            forward.y = 0f; forward.Normalize();
+            right.y = 0f; right.Normalize();
+
+            // Set velocity directly — no MoveTowards steering that causes circular drift
+            _velocity = (forward * _moveInput.y + right * _moveInput.x).normalized * targetSpeed;
+        }
+        else
+        {
+            _velocity = Vector3.MoveTowards(_velocity, Vector3.zero, deceleration * Time.deltaTime);
+        }
+    }
 
     private void HandleStamina()
     {
@@ -120,7 +117,7 @@ public class RPGPlayerController : MonoBehaviour
             _sprintLocked = false;
 
         IsSprinting = sprintInput && IsGrounded && !_sprintLocked
-                      && CurrentStamina > 0f && HasMovementInput();
+                      && CurrentStamina > 0f && _moveInput.magnitude >= 0.1f;
 
         if (IsSprinting)
         {
@@ -143,51 +140,6 @@ public class RPGPlayerController : MonoBehaviour
         }
     }
 
-    // ─── Movement ─────────────────────────────────────────────────────────────
-
-    private void HandleMovement()
-    {
-        Vector3 inputDir = new Vector3(_moveInput.x, 0f, _moveInput.y).normalized;
-
-        float targetSpeed = IsSprinting ? sprintSpeed : walkSpeed;
-
-        // Move relative to camera yaw — forward (W) = camera's forward, right (D) = camera's right
-        Vector3 moveDir = Vector3.zero;
-        if (inputDir.magnitude >= 0.1f)
-        {
-            float cameraYaw = cameraState != null ? cameraState.CameraYaw : transform.eulerAngles.y;
-            Vector3 camForward = Quaternion.Euler(0f, cameraYaw, 0f) * Vector3.forward;
-            Vector3 camRight = Quaternion.Euler(0f, cameraYaw, 0f) * Vector3.right;
-            moveDir = (camForward * inputDir.z + camRight * inputDir.x).normalized;
-        }
-
-        float rate = inputDir.magnitude >= 0.1f ? acceleration : deceleration;
-        _velocity = Vector3.MoveTowards(_velocity, moveDir * targetSpeed, rate * Time.deltaTime);
-    }
-
-    // ─── Rotation ─────────────────────────────────────────────────────────────
-
-    private void ApplyCharacterRotation()
-    {
-        bool freelooking = cameraState != null && cameraState.IsFreelooking;
-        float cameraYaw = cameraState != null ? cameraState.CameraYaw : transform.eulerAngles.y;
-
-        // Root snaps instantly to camera yaw — no damping, no lag
-        transform.rotation = Quaternion.Euler(0f, cameraYaw, 0f);
-
-        // Mesh also snaps instantly — faces movement direction when moving, camera when idle
-        if (meshRoot != null)
-        {
-            Vector3 flatVelocity = new Vector3(_velocity.x, 0f, _velocity.z);
-            if (flatVelocity.magnitude > 0.1f && !freelooking)
-                meshRoot.rotation = Quaternion.LookRotation(flatVelocity);
-            else
-                meshRoot.rotation = Quaternion.Euler(0f, cameraYaw, 0f);
-        }
-    }
-
-    // ─── Jump ─────────────────────────────────────────────────────────────────────
-
     private void HandleJump()
     {
         if (!_jumpPressed || !IsGrounded) return;
@@ -201,22 +153,11 @@ public class RPGPlayerController : MonoBehaviour
         _lastStamina = CurrentStamina;
     }
 
-    // ─── Gravity ──────────────────────────────────────────────────────────────
-
     private void ApplyGravity()
     {
         if (IsGrounded && _verticalVelocity < 0f) _verticalVelocity = -8f;
         else _verticalVelocity += gravity * Time.deltaTime;
     }
-
-    // ─── Final Move ───────────────────────────────────────────────────────────
-
-    private void ApplyMotion()
-    {
-        _cc.Move((_velocity + Vector3.up * _verticalVelocity) * Time.deltaTime);
-    }
-
-    // ─── Public API ───────────────────────────────────────────────────────────
 
     public void RestoreStamina(float amount)
     {
@@ -233,15 +174,10 @@ public class RPGPlayerController : MonoBehaviour
         _lastStamina = CurrentStamina;
     }
 
-    // ─── Helpers ──────────────────────────────────────────────────────────────
-
-    private bool HasMovementInput() =>
-        _moveInput.magnitude > 0.1f;
-
     private void OnDrawGizmosSelected()
     {
         if (_groundCheck == null) return;
         Gizmos.color = IsGrounded ? Color.green : Color.red;
-        Gizmos.DrawWireSphere(_groundCheck.position, groundRadius);
+        Gizmos.DrawWireSphere(_groundCheck.position + Vector3.down * 0.05f, groundRadius);
     }
 }
