@@ -78,6 +78,16 @@ public class RPGPlayerController : MonoBehaviour
         _cc.Move((_velocity + Vector3.up * _verticalVelocity) * Time.deltaTime);
     }
 
+    private void LateUpdate()
+    {
+        if (meshRoot == null) return;
+
+        // Rotate mesh to face movement direction — ignore camera, ignore vertical velocity
+        Vector3 flatVelocity = new Vector3(_velocity.x, 0f, _velocity.z);
+        if (flatVelocity.magnitude > 0.1f)
+            meshRoot.rotation = Quaternion.LookRotation(flatVelocity);
+    }
+
     private void CheckGround()
     {
         Vector3 origin = _groundCheck.position + Vector3.down * 0.05f;
@@ -165,6 +175,19 @@ public class RPGPlayerController : MonoBehaviour
         _staminaRegenTimer = staminaRegenDelay;
         OnStaminaChanged?.Invoke(CurrentStamina / maxStamina);
         _lastStamina = CurrentStamina;
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        Rigidbody rb = hit.collider.attachedRigidbody;
+        if (rb == null || rb.isKinematic) return;
+
+        // Don't push objects below the player (e.g. ground)
+        if (hit.moveDirection.y < -0.3f) return;
+
+        // Push force is based on the direction the player is moving
+        Vector3 pushDir = new Vector3(hit.moveDirection.x, 0f, hit.moveDirection.z);
+        rb.AddForce(pushDir * walkSpeed, ForceMode.Force);
     }
 
     private void OnDrawGizmosSelected()
