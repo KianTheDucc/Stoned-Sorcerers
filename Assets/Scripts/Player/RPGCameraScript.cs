@@ -50,6 +50,8 @@ public class RPGCinemachineInput : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        // IMPORTANT: FreeLook must use Update (not FixedUpdate) since we drive it with mouse input
+        // Set this in the Inspector too: FreeLook → Update Method → Update
     }
 
     private void Update()
@@ -92,14 +94,7 @@ public class RPGCinemachineInput : MonoBehaviour
             if (cameraState != null)
                 cameraState.IsFreelooking = false;
 
-            // Only nudge pitch back when the mouse has been completely idle
-            if (mouseMoving)
-                _returnTimer = returnDelay;
-            else if (_returnTimer > 0f)
-                _returnTimer -= Time.deltaTime;
-            else
-                _freeLook.m_YAxis.Value = Mathf.Lerp(
-                    _freeLook.m_YAxis.Value, returnPitch, returnPitchSpeed * Time.deltaTime);
+            // No auto-recentering — camera stays exactly where the mouse leaves it
         }
     }
 
