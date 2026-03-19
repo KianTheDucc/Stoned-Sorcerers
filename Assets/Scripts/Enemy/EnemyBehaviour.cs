@@ -31,6 +31,7 @@ public class EnemyAI : MonoBehaviour
 
     private NavMeshAgent _agent;
     private NPCPatrol _patrol;
+    private SpiderAttack _spiderAttack;
     private Vector3 _lastKnownPosition;
     private float _loseTimer;
     private float _searchTimer;
@@ -41,6 +42,7 @@ public class EnemyAI : MonoBehaviour
     {
         _agent = GetComponent<NavMeshAgent>();
         _patrol = GetComponent<NPCPatrol>();
+        _spiderAttack = GetComponent<SpiderAttack>(); // optional — null if not a spider
     }
 
     private void Start()
@@ -56,6 +58,9 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        // Yield control to SpiderAttack during lunge/windup/stun
+        if (_spiderAttack != null && _spiderAttack.IsAttacking) return;
+
         switch (_state)
         {
             case State.Patrol: UpdatePatrol(); break;
@@ -91,15 +96,29 @@ public class EnemyAI : MonoBehaviour
 
     private void UpdateChase()
     {
+        if (!_agent.isOnNavMesh) return;
+
         if (CanSeePlayer())
         {
-            // Keep updating last known position while we can see them
             _lastKnownPosition = player.position;
             _loseTimer = losePlayerTimer;
+
+            // If spider is ready to lunge (not on cooldown), stop moving and hand off
+            if (_spiderAttack != null && _spiderAttack.IsReadyToLunge)
+            {
+                float dist = Vector3.Distance(transform.position, player.position);
+                if (dist <= _spiderAttack.LungeRange)
+                {
+                    if (_agent.hasPath) _agent.ResetPath();
+                    return;
+                }
+            }
+
             _agent.SetDestination(player.position);
         }
         else
         {
+            // Lost sight — count down then search
             _loseTimer -= Time.deltaTime;
             if (_loseTimer <= 0f)
                 EnterSearch();
@@ -112,8 +131,9 @@ public class EnemyAI : MonoBehaviour
     {
         _state = State.Search;
         _agent.speed = patrolSpeed;
-        _agent.SetDestination(_lastKnownPosition);
         _searchTimer = searchDuration;
+        if (_agent.isOnNavMesh)
+            _agent.SetDestination(_lastKnownPosition);
     }
 
     private void UpdateSearch()

@@ -95,6 +95,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 8724936030694136337, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -105,6 +109,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8724936030694136337, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3328667286490236123}
+    - targetCorrespondingSourceObject: {fileID: 8724936030694136337, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 847885747435542453}
   m_SourcePrefab: {fileID: 100100000, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}
 --- !u!1 &1585526821322976206 stripped
 GameObject:
@@ -127,9 +134,24 @@ MonoBehaviour:
   firePoint: {fileID: 8822712203523395976}
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 320
   attackKey: 324
   cooldown: 0.4
+--- !u!114 &847885747435542453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585526821322976206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e60272cce952bd041a8514917ddc87b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 100
+  CurrentHealth: 100
+  knockbackDecay: 10
 --- !u!4 &6192612084196917858 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4243882649989542845, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}
