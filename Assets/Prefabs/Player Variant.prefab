@@ -112,6 +112,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8724936030694136337, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 847885747435542453}
+    - targetCorrespondingSourceObject: {fileID: 8724936030694136337, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6080929461559394574}
   m_SourcePrefab: {fileID: 100100000, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}
 --- !u!1 &1585526821322976206 stripped
 GameObject:
@@ -135,7 +138,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 320
-  attackKey: 324
+  attackKey: 323
   cooldown: 0.4
 --- !u!114 &847885747435542453
 MonoBehaviour:
@@ -152,6 +155,29 @@ MonoBehaviour:
   maxHealth: 100
   CurrentHealth: 100
   knockbackDecay: 10
+--- !u!114 &6080929461559394574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585526821322976206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 880f3428502e38147a320c1d177a6cc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChargeAttack
+  chargeProjectilePrefab: {fileID: 7580008575987639196, guid: 539365fc6f09a614b9e05b5798a45041, type: 3}
+  firePoint: {fileID: 8822712203523395976}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 320
+  attackKey: 324
+  minChargeTime: 0.3
+  maxChargeTime: 2
+  cooldown: 1
+  chargeIndicator: {fileID: 0}
+  indicatorMaxScale: 1.5
 --- !u!4 &6192612084196917858 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4243882649989542845, guid: f31973555fcbfb84d9e82b88f9aa13c3, type: 3}

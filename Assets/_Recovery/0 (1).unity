@@ -1501,6 +1501,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6080929461559394574, guid: 250fbdca2f8fbf048a456668f8fc4b24, type: 3}
+      propertyPath: maxChargeTime
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 6192612084196917858, guid: 250fbdca2f8fbf048a456668f8fc4b24, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.04
