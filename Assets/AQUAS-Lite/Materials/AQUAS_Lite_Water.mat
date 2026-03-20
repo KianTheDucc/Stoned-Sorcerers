@@ -18,7 +18,7 @@ Material:
   - _ENABLEREFLECTIONS_ON
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
+  m_DoubleSidedGI: 1
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
@@ -109,7 +109,7 @@ Material:
     - _NormalTiling: 1.1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ProbeReflectionIntensity: 0.361
+    - _ProbeReflectionIntensity: 0.239
     - _RealtimeReflectionIntensity: 1
     - _ReflectionIntensity: 0.385
     - _Refraction: 0.257

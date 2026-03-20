@@ -14,10 +14,10 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
+  m_Fog: 1
   m_FogColor: {r: 0.3137255, g: 0.60784316, b: 0.85098046, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.003
+  m_FogDensity: 0.0025
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -1354,11 +1354,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 554198557059447689, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.97835416
+      value: 0.9783545
       objectReference: {fileID: 0}
     - target: {fileID: 554198557059447689, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.20693752
+      value: -0.20693578
+      objectReference: {fileID: 0}
+    - target: {fileID: 554198557059447689, guid: 498e1614d41eea440b6046590dadd510, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -4.7453357e-11
+      objectReference: {fileID: 0}
+    - target: {fileID: 554198557059447689, guid: 498e1614d41eea440b6046590dadd510, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 4.7728553e-12
       objectReference: {fileID: 0}
     - target: {fileID: 3851708694278436630, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1374,11 +1382,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3851708694278436630, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9819564
+      value: 0.9819567
       objectReference: {fileID: 0}
     - target: {fileID: 3851708694278436630, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.18910755
+      value: -0.1891058
+      objectReference: {fileID: 0}
+    - target: {fileID: 3851708694278436630, guid: 498e1614d41eea440b6046590dadd510, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 9.520317e-11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3851708694278436630, guid: 498e1614d41eea440b6046590dadd510, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -7.1417395e-12
       objectReference: {fileID: 0}
     - target: {fileID: 4392282880169536104, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1386,11 +1402,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4392282880169536104, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.974439
+      value: 0.97443944
       objectReference: {fileID: 0}
     - target: {fileID: 4392282880169536104, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.22465225
+      value: -0.22465053
+      objectReference: {fileID: 0}
+    - target: {fileID: 4392282880169536104, guid: 498e1614d41eea440b6046590dadd510, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1.23591e-10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4392282880169536104, guid: 498e1614d41eea440b6046590dadd510, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -6.6121683e-12
       objectReference: {fileID: 0}
     - target: {fileID: 6118132801631499473, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_Name
@@ -1410,11 +1434,11 @@ PrefabInstance:
       objectReference: {fileID: 387671030}
     - target: {fileID: 8245733731223647509, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -575.3
+      value: -502.6
       objectReference: {fileID: 0}
     - target: {fileID: 8245733731223647509, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 216.39
+      value: 203.2
       objectReference: {fileID: 0}
     - target: {fileID: 8245733731223647509, guid: 498e1614d41eea440b6046590dadd510, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2034,7 +2058,7 @@ Terrain:
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
   m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 80
+  m_DetailObjectDistance: 125
   m_DetailObjectDensity: 1
   m_HeightmapPixelError: 5
   m_SplatMapDistance: 1000
@@ -2072,39 +2096,6 @@ MonoBehaviour:
   m_Script: {fileID: 910771039, guid: f56d46228aee4734f9114056c53bb57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EasyRoads3Dv3.dll::EasyRoads3Dv3.ERTerrain
-  surfacevecs: []
-  tdataFloat: []
-  terrainData: {fileID: 15600000, guid: ab422e6a91ff3aa428913abe844c2725, type: 2}
-  xStart: 0
-  zStart: 0
-  roadSurface: {fileID: 0}
-  surfaceMesh: {fileID: 0}
-  surfaceCollider: {fileID: 0}
-  terrainDataStored: []
-  terrainChanges: []
-  terrainTrees: []
-  detailInstances: []
-  detailInstanceStarts: 
-  surfaceObjects: []
-  terrainTestPoints: []
-  splatData: []
-  addedTrees: []
-  holes: []
-  terrainHeightsBackup: []
-  terrainTreesBackup: []
-  terrainDetailBackup: []
-  terrainSplatBackup: []
-  detailInstanceStartsBackUp: 
-  heightmapFlag: 0
-  splatmapFlag: 0
-  treeFlag: 0
-  detailFlag: 0
-  holesFlag: 0
-  terrainDone: 0
-  backupFlagNotification: 0
-  ignore: 0
-  backupObject: {fileID: 0}
-  terrain: {fileID: 0}
 --- !u!1 &789148283
 GameObject:
   m_ObjectHideFlags: 0
@@ -2188,6 +2179,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: LakeRiver
       objectReference: {fileID: 0}
+    - target: {fileID: 134676, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134676, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 440718, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
       propertyPath: m_LocalScale.x
       value: 30
@@ -2236,6 +2235,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2368724, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_CastShadows
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2368724, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_MotionVectors
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2368724, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 11489712, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
       propertyPath: m_TextureSize
       value: 1024
@@ -2245,16 +2256,28 @@ PrefabInstance:
       value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 11489712, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_DisablePixelLights
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11489712, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
       propertyPath: ignoreOcclusionCulling
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11489712, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
       propertyPath: m_ReflectLayers.m_Bits
-      value: 496
+      value: 502
       objectReference: {fileID: 0}
     - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
       propertyPath: m_HDR
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_FarClip
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_NearClip
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
       propertyPath: m_ClearFlags
@@ -2262,11 +2285,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
       propertyPath: m_Importance
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
       propertyPath: m_Resolution
-      value: 128
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_BlendDistance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_BoxProjection
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_IntensityMultiplier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 215663709744633162, guid: 6488b6e6bbe8a9c4585b531a71d8211c, type: 3}
+      propertyPath: m_UseOcclusionCulling
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2596,9 +2639,9 @@ MonoBehaviour:
   opacity: 100
   passIndex: 0
   min: 0
-  minFalloff: 1
-  max: 201
-  maxFalloff: 1
+  minFalloff: 200
+  max: 197
+  maxFalloff: 16.7
 --- !u!1 &943984945
 GameObject:
   m_ObjectHideFlags: 0
@@ -2944,8 +2987,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1069172217}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.22465228, y: -0.00000003246832, z: -0.000000007485417, w: 0.974439}
-  m_LocalPosition: {x: -575.3, y: 216.39, z: 508.5}
+  m_LocalRotation: {x: -0.22465056, y: 1.321386e-10, z: 3.046368e-11, w: 0.97443944}
+  m_LocalPosition: {x: -502.6, y: 203.39973, z: 508.9993}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4255,39 +4298,6 @@ MonoBehaviour:
   m_Script: {fileID: 910771039, guid: f56d46228aee4734f9114056c53bb57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: EasyRoads3Dv3.dll::EasyRoads3Dv3.ERTerrain
-  surfacevecs: []
-  tdataFloat: []
-  terrainData: {fileID: 15600000, guid: 6628caaf4ac69804f8870516c37c34f3, type: 2}
-  xStart: 0
-  zStart: 0
-  roadSurface: {fileID: 0}
-  surfaceMesh: {fileID: 0}
-  surfaceCollider: {fileID: 0}
-  terrainDataStored: []
-  terrainChanges: []
-  terrainTrees: []
-  detailInstances: []
-  detailInstanceStarts: 
-  surfaceObjects: []
-  terrainTestPoints: []
-  splatData: []
-  addedTrees: []
-  holes: []
-  terrainHeightsBackup: []
-  terrainTreesBackup: []
-  terrainDetailBackup: []
-  terrainSplatBackup: []
-  detailInstanceStartsBackUp: 
-  heightmapFlag: 0
-  splatmapFlag: 0
-  treeFlag: 0
-  detailFlag: 0
-  holesFlag: 0
-  terrainDone: 0
-  backupFlagNotification: 0
-  ignore: 0
-  backupObject: {fileID: 0}
-  terrain: {fileID: 0}
 --- !u!1 &1695573077
 GameObject:
   m_ObjectHideFlags: 0
@@ -5160,11 +5170,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6192612084196917858, guid: 250fbdca2f8fbf048a456668f8fc4b24, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -575.3
+      value: -502.6
       objectReference: {fileID: 0}
     - target: {fileID: 6192612084196917858, guid: 250fbdca2f8fbf048a456668f8fc4b24, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 218.39
+      value: 205.2
       objectReference: {fileID: 0}
     - target: {fileID: 6192612084196917858, guid: 250fbdca2f8fbf048a456668f8fc4b24, type: 3}
       propertyPath: m_LocalPosition.z
