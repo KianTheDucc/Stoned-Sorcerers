@@ -2,7 +2,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-
+/// <summary>
+/// Spider lunge attack — works alongside EnemyAI.
+/// When the player enters lunge range, the spider winds up briefly then launches
+/// itself at the player. Deals damage + knockback on contact. If it misses,
+/// it is stunned for a moment before resuming patrol/chase.
+/// 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Rigidbody))]
 public class SpiderAttack : MonoBehaviour
@@ -16,11 +21,6 @@ public class SpiderAttack : MonoBehaviour
     [SerializeField] private float windUpTime = 0.4f; // pause before launching
     [SerializeField] private float lungeForce = 18f;  // launch force
     [SerializeField] private float lungeDuration = 0.5f; // how long lunge lasts before stun check
-
-    [Header("Damage")]
-    [SerializeField] private float damage = 15f;
-    [SerializeField] private float knockbackForce = 10f;
-    [SerializeField] private float hitRadius = 1.2f; // contact detection radius at lunge end
 
     [Header("Cooldown & Stun")]
     [SerializeField] private float cooldown = 3f;   // seconds before can lunge again
@@ -36,12 +36,16 @@ public class SpiderAttack : MonoBehaviour
     /// <summary>True only when fully ready to lunge — not cooldown, not attacking.</summary>
     public bool IsReadyToLunge => _state == LungeState.Ready;
 
+    /// <summary>True during cooldown after a lunge — EnemyAI should back away from player.</summary>
+    public bool IsOnCooldown => _state == LungeState.Cooldown;
+
     /// <summary>Exposed so EnemyAI knows when to stop chasing and let the lunge trigger.</summary>
     public float LungeRange => lungeRange;
 
     private NavMeshAgent _agent;
     private Rigidbody _rb;
     private EnemyAI _enemyAI;
+    private EnemyContactDamage _contactDamage;
     private Vector3 _lungeDirection;
 
     private void Awake()
@@ -49,6 +53,7 @@ public class SpiderAttack : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _rb = GetComponent<Rigidbody>();
         _enemyAI = GetComponent<EnemyAI>();
+        _contactDamage = GetComponent<EnemyContactDamage>();
 
         // Rigidbody setup — we take manual control during the lunge
         _rb.isKinematic = true;
@@ -79,18 +84,21 @@ public class SpiderAttack : MonoBehaviour
         if (toPlayer != Vector3.zero)
             transform.rotation = Quaternion.LookRotation(toPlayer);
 
-        // Lock direction at the moment of launch — add upward angle for the arc
-        Vector3 flat = (player.position - transform.position);
-        flat.y = 0f;
-        _lungeDirection = (flat.normalized + Vector3.up).normalized;
-
         yield return new WaitForSeconds(windUpTime);
 
         // ── Launch ──
         _state = LungeState.Lunging;
         _agent.enabled = false;
         _rb.isKinematic = false;
-        _rb.linearVelocity = _lungeDirection * lungeForce;
+        _rb.useGravity = true;
+
+        // Calculate a ballistic launch velocity that lands on the player
+        // using physics: v = (target - origin) / t - 0.5 * gravity * t
+        float flightTime = 0.6f; // tune this to change arc height
+        Vector3 toTarget = player.position - transform.position;
+        Vector3 horizontalVel = new Vector3(toTarget.x, 0f, toTarget.z) / flightTime;
+        float verticalVel = (toTarget.y / flightTime) - (0.5f * Physics.gravity.y * flightTime);
+        _rb.linearVelocity = new Vector3(horizontalVel.x, verticalVel, horizontalVel.z);
 
         // Wait until the spider has left the ground before checking for landing
         bool leftGround = false;
@@ -118,28 +126,7 @@ public class SpiderAttack : MonoBehaviour
         {
             lungeTimer += Time.deltaTime;
 
-            // Check for player contact
-            if (!hit)
-            {
-                Collider[] cols = Physics.OverlapSphere(transform.position, hitRadius);
-                foreach (var col in cols)
-                {
-                    // Use tag check — make sure your Player is tagged "Player" in Unity
-                    if (!col.CompareTag("Player") && col.GetComponentInParent<PlayerHealth>() == null) continue;
-
-                    PlayerHealth playerHealth = col.GetComponentInParent<PlayerHealth>();
-                    if (playerHealth != null)
-                    {
-                        playerHealth.TakeDamage(damage);
-                        Vector3 knockDir = (player.position - transform.position).normalized;
-                        knockDir.y = 0.3f;
-                        playerHealth.ApplyKnockback(knockDir * knockbackForce);
-                    }
-
-                    hit = true;
-                    break;
-                }
-            }
+            // Damage and knockback are handled by EnemyContactDamage on collision
 
             // Check if landed — use low velocity as a reliable landing indicator
             bool landed = _rb.linearVelocity.magnitude < 0.5f || lungeTimer >= lungeTimeout;
@@ -152,6 +139,10 @@ public class SpiderAttack : MonoBehaviour
         // ── Land ──
         _rb.linearVelocity = Vector3.zero;
         _rb.isKinematic = true;
+        _rb.useGravity = false;
+
+        // Check for player contact at landing position
+        _contactDamage?.CheckLungeContact();
 
         // Warp BEFORE enabling the agent — prevents it snapping to old NavMesh position
         Vector3 landedPosition = transform.position;
@@ -186,7 +177,20 @@ public class SpiderAttack : MonoBehaviour
     {
         _state = LungeState.Cooldown;
         SetAIEnabled(true);
-        yield return new WaitForSeconds(cooldown);
+
+        // Wait for cooldown AND for spider to be far enough from player to lunge again
+        float timer = 0f;
+        while (true)
+        {
+            timer += Time.deltaTime;
+            bool cooldownDone = timer >= cooldown;
+            bool farEnough = player == null ||
+                                Vector3.Distance(transform.position, player.position) > lungeRange * 1.5f;
+
+            if (cooldownDone && farEnough) break;
+            yield return null;
+        }
+
         _state = LungeState.Ready;
     }
 
@@ -206,8 +210,6 @@ public class SpiderAttack : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, lungeRange);
 
-        // Hit detection radius
-        Gizmos.color = new Color(1f, 0.4f, 0f, 0.5f);
-        Gizmos.DrawWireSphere(transform.position, hitRadius);
+
     }
 }

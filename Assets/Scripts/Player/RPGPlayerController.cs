@@ -80,12 +80,17 @@ public class RPGPlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (meshRoot == null) return;
+        bool freelooking = cameraState != null && cameraState.IsFreelooking;
 
-        // Rotate mesh to face movement direction — ignore camera, ignore vertical velocity
-        Vector3 flatVelocity = new Vector3(_velocity.x, 0f, _velocity.z);
-        if (flatVelocity.magnitude > 0.1f)
-            meshRoot.rotation = Quaternion.LookRotation(flatVelocity);
+        if (meshRoot != null)
+        {
+            if (!freelooking && cameraState != null)
+            {
+                // Always face the camera direction
+                meshRoot.rotation = Quaternion.Euler(0f, cameraState.CameraYaw, 0f);
+            }
+            // During freelook — mesh stays frozen, camera orbits freely
+        }
     }
 
     private void CheckGround()
@@ -196,4 +201,4 @@ public class RPGPlayerController : MonoBehaviour
         Gizmos.color = IsGrounded ? Color.green : Color.red;
         Gizmos.DrawWireSphere(_groundCheck.position + Vector3.down * 0.05f, groundRadius);
     }
-}
+}   

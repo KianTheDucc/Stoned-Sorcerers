@@ -1,7 +1,15 @@
 using UnityEngine;
 using Cinemachine;
 
-
+/// <summary>
+/// Cinemachine RPG Camera — always-locked cursor, Dark Souls / WoW style.
+///
+/// Behaviour:
+///   - Cursor is always locked. Mouse always rotates the camera.
+///   - The player character is kept in sync with the camera yaw via the
+///     shared CameraState ScriptableObject (read by RPGPlayerController).
+///   - Hold Right Mouse Button to freelook: camera orbits the player freely
+///     without rotating the character. On release, camera snaps back behind.
 [RequireComponent(typeof(CinemachineFreeLook))]
 public class RPGCinemachineInput : MonoBehaviour
 {
@@ -105,9 +113,15 @@ public class RPGCinemachineInput : MonoBehaviour
             _targetZoom = Mathf.Clamp(_targetZoom - scroll * zoomSpeed,
                                       minZoomMultiplier, maxZoomMultiplier);
 
-        _zoomMultiplier = Mathf.Lerp(_zoomMultiplier, _targetZoom, zoomSmoothing * Time.deltaTime);
+        float newZoom = Mathf.Lerp(_zoomMultiplier, _targetZoom, zoomSmoothing * Time.deltaTime);
 
-        for (int i = 0; i < 3; i++)
-            _freeLook.m_Orbits[i].m_Radius = _baseRadii[i] * _zoomMultiplier;
+        // Only update orbits if zoom actually changed — avoids forcing Cinemachine to
+        // recalculate camera position every frame and causing subtle snapping
+        if (!Mathf.Approximately(newZoom, _zoomMultiplier))
+        {
+            _zoomMultiplier = newZoom;
+            for (int i = 0; i < 3; i++)
+                _freeLook.m_Orbits[i].m_Radius = _baseRadii[i] * _zoomMultiplier;
+        }
     }
 }

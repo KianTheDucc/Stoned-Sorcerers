@@ -3,6 +3,12 @@ using UnityEngine;
 using UnityEngine.AI;
 
 
+/// Enemy AI with three states: Patrol, Chase, Search.
+/// - Patrol: uses NPCPatrol to roam waypoints randomly
+/// - Chase: player detected within radius AND line of sight
+/// - Search: player lost, enemy returns toward last known position then resumes patrol
+///
+
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(NPCPatrol))]
 public class EnemyAI : MonoBehaviour
@@ -22,8 +28,11 @@ public class EnemyAI : MonoBehaviour
 
     // ─── Search ───────────────────────────────────────────────────────────────
     [Header("Search")]
-    [SerializeField] private float searchDuration = 5f;   // seconds spent at last known pos
+    [SerializeField] private float searchDuration = 5f;
     [SerializeField] private float patrolSpeed = 3.5f;
+
+    [Header("Back Away")]
+    [SerializeField] private float backAwayDistance = 4f;
 
     // ─── State ────────────────────────────────────────────────────────────────
     private enum State { Patrol, Chase, Search }
@@ -35,6 +44,7 @@ public class EnemyAI : MonoBehaviour
     private Vector3 _lastKnownPosition;
     private float _loseTimer;
     private float _searchTimer;
+    private float _backAwayTimer;
 
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -98,31 +108,54 @@ public class EnemyAI : MonoBehaviour
     {
         if (!_agent.isOnNavMesh) return;
 
+        // Spider is on cooldown after a lunge — back away and do nothing else
+        if (_spiderAttack != null && _spiderAttack.IsOnCooldown)
+        {
+            BackAwayFromPlayer();
+            return;
+        }
+
+        // Spider is ready to lunge and player is in range — stop and let SpiderAttack fire
+        if (_spiderAttack != null && _spiderAttack.IsReadyToLunge)
+        {
+            float dist = Vector3.Distance(transform.position, player.position);
+            if (dist <= _spiderAttack.LungeRange)
+            {
+                if (_agent.hasPath) _agent.ResetPath();
+                return;
+            }
+        }
+
+        // Chase the player
         if (CanSeePlayer())
         {
             _lastKnownPosition = player.position;
             _loseTimer = losePlayerTimer;
-
-            // If spider is ready to lunge (not on cooldown), stop moving and hand off
-            if (_spiderAttack != null && _spiderAttack.IsReadyToLunge)
-            {
-                float dist = Vector3.Distance(transform.position, player.position);
-                if (dist <= _spiderAttack.LungeRange)
-                {
-                    if (_agent.hasPath) _agent.ResetPath();
-                    return;
-                }
-            }
-
             _agent.SetDestination(player.position);
         }
         else
         {
-            // Lost sight — count down then search
             _loseTimer -= Time.deltaTime;
             if (_loseTimer <= 0f)
                 EnterSearch();
         }
+    }
+
+    private void BackAwayFromPlayer()
+    {
+        if (player == null || !_agent.isOnNavMesh) return;
+
+        _backAwayTimer -= Time.deltaTime;
+        if (_backAwayTimer > 0f) return;
+        _backAwayTimer = 0.5f;
+
+        Vector3 dirAway = (transform.position - player.position).normalized;
+        dirAway.y = 0f;
+        Vector3 backPos = transform.position + dirAway * backAwayDistance;
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(backPos, out hit, backAwayDistance, NavMesh.AllAreas))
+            _agent.SetDestination(hit.position);
     }
 
     // ─── Search ───────────────────────────────────────────────────────────────
